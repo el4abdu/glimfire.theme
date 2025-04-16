@@ -8,40 +8,53 @@
     <div class="client-gallery__slider swiper-container">
       <div class="swiper-wrapper">
         {% for block in section.blocks %}
-          <div class="swiper-slide client-gallery__slide" {{ block.shopify_attributes }}>
-            <div class="client-gallery__image-wrap">
-              {% if block.settings.image != blank %}
-                <img 
-                  src="{{ block.settings.image | img_url: '600x' }}"
-                  alt="{{ block.settings.client_name }}"
-                  loading="lazy"
-                  class="client-gallery__image"
-                >
-              {% endif %}
-            </div>
-            {% if block.settings.client_name != blank or block.settings.testimonial != blank %}
-              <div class="client-gallery__content">
-                {% if block.settings.client_name != blank %}
-                  <h3 class="client-gallery__name">{{ block.settings.client_name }}</h3>
-                {% endif %}
-                {% if block.settings.testimonial != blank %}
-                  <p class="client-gallery__testimonial">{{ block.settings.testimonial }}</p>
+          <div class="swiper-slide client-gallery__slide" {{ block.shopify_attributes }} data-index="{{ forloop.index }}">
+            <div class="client-gallery__card">
+              <div class="client-gallery__image-wrap">
+                {% if block.settings.image != blank %}
+                  <img 
+                    src="{{ block.settings.image | img_url: '600x' }}"
+                    alt="{{ block.settings.client_name }}"
+                    loading="lazy"
+                    class="client-gallery__image"
+                  >
+                  <div class="client-gallery__image-overlay"></div>
                 {% endif %}
               </div>
-            {% endif %}
+              {% if block.settings.client_name != blank or block.settings.testimonial != blank %}
+                <div class="client-gallery__content">
+                  {% if block.settings.client_name != blank %}
+                    <h3 class="client-gallery__name">{{ block.settings.client_name }}</h3>
+                  {% endif %}
+                  {% if block.settings.testimonial != blank %}
+                    <p class="client-gallery__testimonial">{{ block.settings.testimonial }}</p>
+                    <div class="client-gallery__highlight-box">
+                      <span class="client-gallery__highlight-text">{{ block.settings.highlight | default: "Amazing!" }}</span>
+                    </div>
+                  {% endif %}
+                  <div class="client-gallery__rating">
+                    {% assign rating = block.settings.rating | default: 5 %}
+                    {% for i in (1..5) %}
+                      <span class="client-gallery__star {% if i <= rating %}active{% endif %}">★</span>
+                    {% endfor %}
+                  </div>
+                </div>
+              {% endif %}
+            </div>
           </div>
         {% endfor %}
       </div>
       
       <div class="client-gallery__navigation">
         <button class="client-gallery__prev">
-          <svg width="16" height="9" viewBox="0 0 16 9" fill="none">
-            <path d="M16 1.38462L14.5455 0L8 6.23077L1.45455 0L0 1.38462L8 9L16 1.38462Z"/>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </button>
+        <div class="client-gallery__pagination"></div>
         <button class="client-gallery__next">
-          <svg width="16" height="9" viewBox="0 0 16 9" fill="none">
-            <path d="M16 1.38462L14.5455 0L8 6.23077L1.45455 0L0 1.38462L8 9L16 1.38462Z"/>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </button>
       </div>
@@ -51,38 +64,74 @@
 
 <style>
 .client-gallery {
-  padding: 6rem 2rem;
+  padding: 8rem 2rem;
   overflow: hidden;
+  position: relative;
+}
+
+.client-gallery::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, rgba(var(--primary-color-rgb), 0.1) 0%, rgba(0, 0, 0, 0) 70%);
+  pointer-events: none;
 }
 
 .client-gallery__container {
   max-width: 1400px;
   margin: 0 auto;
+  position: relative;
 }
 
 .client-gallery__title {
   text-align: center;
-  font-size: 2.5rem;
-  margin-bottom: 3rem;
-  background: linear-gradient(45deg, var(--primary-color), #FFA500);
+  font-size: 3.5rem;
+  margin-bottom: 4rem;
+  background: linear-gradient(45deg, var(--primary-color), #FFD700);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  position: relative;
+  animation: shimmer 3s infinite linear;
+}
+
+@keyframes shimmer {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 .client-gallery__slider {
   position: relative;
-  padding: 2rem 0;
+  padding: 3rem 0;
+  perspective: 1000px;
 }
 
 .client-gallery__slide {
-  width: 340px;
+  width: 360px;
   transform-origin: center center;
-  transition: all 0.6s ease;
+  transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.client-gallery__card {
+  border-radius: 24px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.client-gallery__slide:hover .client-gallery__card {
+  transform: translateY(-15px) rotateY(5deg);
 }
 
 .client-gallery__image-wrap {
   position: relative;
-  border-radius: 15px;
   overflow: hidden;
   aspect-ratio: 1;
 }
@@ -91,107 +140,241 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.6s ease;
+  transition: transform 1s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.client-gallery__image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, rgba(0,0,0,0) 70%, rgba(0,0,0,0.8) 100%);
+  opacity: 0.7;
+  transition: opacity 0.5s ease;
 }
 
 .client-gallery__slide:hover .client-gallery__image {
-  transform: scale(1.05);
+  transform: scale(1.08);
+}
+
+.client-gallery__slide:hover .client-gallery__image-overlay {
+  opacity: 0.4;
 }
 
 .client-gallery__content {
-  padding: 1.5rem;
+  padding: 1.8rem;
   text-align: center;
+  position: relative;
 }
 
 .client-gallery__name {
-  font-size: 1.2rem;
+  font-size: 1.4rem;
+  font-weight: 600;
   margin-bottom: 0.5rem;
   color: var(--text-color);
+  background: linear-gradient(45deg, #fff, #ccc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .client-gallery__testimonial {
-  font-size: 0.9rem;
+  font-size: 1rem;
   color: rgba(255, 255, 255, 0.8);
   line-height: 1.6;
+  margin-bottom: 1.2rem;
+}
+
+.client-gallery__highlight-box {
+  position: absolute;
+  top: -15px;
+  right: 20px;
+  transform: rotate(5deg);
+  padding: 5px 12px;
+  background: linear-gradient(45deg, #FF6B6B, #FF8E53);
+  border-radius: 30px;
+  box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+  opacity: 0;
+  transform: translateY(20px) rotate(5deg);
+  transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.client-gallery__slide:hover .client-gallery__highlight-box {
+  opacity: 1;
+  transform: translateY(0) rotate(5deg);
+}
+
+.client-gallery__highlight-text {
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: white;
+}
+
+.client-gallery__rating {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  gap: 0.3rem;
+}
+
+.client-gallery__star {
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.client-gallery__star.active {
+  color: #FFD700;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
 }
 
 .client-gallery__navigation {
   display: flex;
   justify-content: center;
-  gap: 1rem;
-  margin-top: 2rem;
+  align-items: center;
+  gap: 2rem;
+  margin-top: 3rem;
+}
+
+.client-gallery__pagination {
+  display: flex;
+  gap: 0.5rem;
 }
 
 .client-gallery__prev,
 .client-gallery__next {
-  background: transparent;
-  border: 2px solid var(--primary-color);
-  color: var(--primary-color);
-  width: 40px;
-  height: 40px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-color);
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
 }
 
 .client-gallery__prev:hover,
 .client-gallery__next:hover {
-  background: var(--primary-color);
-  color: var(--background-color);
-}
-
-.client-gallery__prev svg,
-.client-gallery__next svg {
-  width: 20px;
-  height: 20px;
-  fill: currentColor;
-}
-
-.client-gallery__prev svg {
-  transform: rotate(90deg);
-}
-
-.client-gallery__next svg {
-  transform: rotate(-90deg);
+  background: linear-gradient(45deg, var(--primary-color), rgba(255, 215, 0, 0.5));
+  color: white;
+  transform: scale(1.1);
+  box-shadow: 0 0 20px rgba(var(--primary-color-rgb), 0.5);
 }
 
 @media (max-width: 768px) {
   .client-gallery {
-    padding: 4rem 1rem;
+    padding: 6rem 1rem;
   }
   
   .client-gallery__title {
-    font-size: 2rem;
+    font-size: 2.5rem;
   }
   
   .client-gallery__slide {
-    width: 280px;
+    width: 300px;
   }
+}
+
+.swiper-pagination-bullet {
+  width: 10px;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.2);
+  opacity: 1;
+  transition: all 0.3s ease;
+}
+
+.swiper-pagination-bullet-active {
+  background: var(--primary-color);
+  transform: scale(1.5);
 }
 </style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  new Swiper('.client-gallery__slider', {
+  // Initialize gallery with parallax and 3D effects
+  const swiper = new Swiper('.client-gallery__slider', {
     effect: 'coverflow',
     grabCursor: true,
     centeredSlides: true,
     slidesPerView: 'auto',
     loop: true,
+    speed: 800,
+    autoplay: {
+      delay: 5000,
+      disableOnInteraction: false,
+    },
     coverflowEffect: {
-      rotate: 0,
-      stretch: 0,
+      rotate: 5,
+      stretch: 20,
       depth: 200,
-      modifier: 1,
+      modifier: 1.2,
       slideShadows: false,
+    },
+    pagination: {
+      el: '.client-gallery__pagination',
+      clickable: true,
+      dynamicBullets: true,
     },
     navigation: {
       nextEl: '.client-gallery__next',
       prevEl: '.client-gallery__prev',
     },
+    on: {
+      slideChange: function() {
+        // Add active class animation
+        const slides = document.querySelectorAll('.client-gallery__slide');
+        slides.forEach(slide => {
+          slide.classList.remove('active');
+        });
+        setTimeout(() => {
+          const activeSlides = document.querySelectorAll('.swiper-slide-active, .swiper-slide-prev, .swiper-slide-next');
+          activeSlides.forEach(slide => {
+            slide.classList.add('active');
+          });
+        }, 100);
+      }
+    }
+  });
+  
+  // 3D tilt effect for cards
+  const cards = document.querySelectorAll('.client-gallery__card');
+  
+  cards.forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      
+      const rotateX = (y - centerY) / 15;
+      const rotateY = (centerX - x) / 15;
+      
+      card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.05, 1.05, 1.05)`;
+    });
+    
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+    });
+  });
+  
+  // Highlight random words in testimonials to simulate AI processing
+  const testimonials = document.querySelectorAll('.client-gallery__testimonial');
+  testimonials.forEach(testimonial => {
+    const words = testimonial.textContent.split(' ');
+    const highlightedText = words.map(word => {
+      // Randomly highlight some important words
+      const shouldHighlight = word.length > 3 && Math.random() > 0.75;
+      return shouldHighlight ? `<span class="highlighted-word">${word}</span>` : word;
+    }).join(' ');
+    
+    testimonial.innerHTML = highlightedText;
   });
 });
 </script>
@@ -205,7 +388,7 @@ document.addEventListener('DOMContentLoaded', function() {
       "type": "text",
       "id": "title",
       "label": "Title",
-      "default": "Our Happy Clients"
+      "default": "What Our Clients Say"
     },
     {
       "type": "color",
@@ -235,6 +418,21 @@ document.addEventListener('DOMContentLoaded', function() {
           "id": "testimonial",
           "label": "Testimonial",
           "default": "Amazing product! Fast shipping and great quality."
+        },
+        {
+          "type": "text",
+          "id": "highlight",
+          "label": "Highlight Text",
+          "default": "Love it!"
+        },
+        {
+          "type": "range",
+          "id": "rating",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "default": 5,
+          "label": "Rating"
         }
       ]
     }

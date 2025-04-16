@@ -1,114 +1,485 @@
 {% if section.blocks.size > 0 %}
   <div class="announcement-bar">
-    <div class="announcement-slider">
-      {% for block in section.blocks %}
-        <div class="announcement-slide" {{ block.shopify_attributes }}>
-          {% if block.settings.link != blank %}
-            <a href="{{ block.settings.link }}" class="announcement-link">
-          {% endif %}
-          
-          <div class="announcement-content">
-            {% if block.settings.icon != blank %}
-              <span class="announcement-icon">{{ block.settings.icon }}</span>
-            {% endif %}
-            <span class="announcement-text">{{ block.settings.text }}</span>
+    <div class="announcement-bar__slider swiper-container">
+      <div class="swiper-wrapper">
+        {% for block in section.blocks %}
+          <div class="swiper-slide announcement-bar__slide" {{ block.shopify_attributes }}>
+            <div class="announcement-bar__content">
+              {% if block.settings.icon != blank %}
+                <span class="announcement-bar__icon">
+                  {% render 'icon', icon: block.settings.icon, class: 'announcement-bar__icon-svg' %}
+                </span>
+              {% endif %}
+              
+              {% if block.settings.text != blank %}
+                <div class="announcement-bar__text">{{ block.settings.text }}</div>
+              {% endif %}
+              
+              {% if block.settings.link != blank %}
+                <a href="{{ block.settings.link }}" class="announcement-bar__link">
+                  {{ block.settings.link_text | default: 'Learn More' }}
+                  <svg class="announcement-bar__arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M8 0L6.59 1.41L12.17 7H0V9H12.17L6.59 14.59L8 16L16 8L8 0Z" fill="currentColor"/>
+                  </svg>
+                </a>
+              {% endif %}
+            </div>
           </div>
-          
-          {% if block.settings.link != blank %}
-            </a>
-          {% endif %}
-        </div>
-      {% endfor %}
+        {% endfor %}
+      </div>
+    </div>
+    
+    <div class="announcement-bar__controls">
+      <button class="announcement-bar__button announcement-bar__prev" aria-label="Previous announcement">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div class="announcement-bar__pagination"></div>
+      <button class="announcement-bar__button announcement-bar__next" aria-label="Next announcement">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
     </div>
   </div>
 
   <style>
     .announcement-bar {
-      background: linear-gradient(45deg, var(--primary-color), #000);
-      color: var(--text-color);
+      background: linear-gradient(90deg, rgba(0, 0, 0, 0.6) 0%, rgba(30, 30, 35, 0.7) 100%);
       position: relative;
       overflow: hidden;
-      height: 40px;
+      height: 50px;
+      z-index: 9;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 5px 20px -5px rgba(0, 0, 0, 0.3);
     }
 
-    .announcement-slider {
+    .announcement-bar::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(var(--primary-color-rgb), 0.8) 15%, 
+        rgba(255, 215, 0, 0.8) 50%, 
+        rgba(var(--primary-color-rgb), 0.8) 85%, 
+        transparent 100%);
+      background-size: 300% 100%;
+      animation: shimmer 4s infinite linear;
+    }
+
+    .announcement-bar::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(var(--primary-color-rgb), 0.5) 15%, 
+        rgba(255, 215, 0, 0.5) 50%, 
+        rgba(var(--primary-color-rgb), 0.5) 85%, 
+        transparent 100%);
+      background-size: 300% 100%;
+      animation: shimmer 4s infinite linear reverse;
+    }
+
+    @keyframes shimmer {
+      0% { background-position: -300px 0; }
+      100% { background-position: 300px 0; }
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); filter: brightness(1); }
+      50% { transform: scale(1.05); filter: brightness(1.2); }
+      100% { transform: scale(1); filter: brightness(1); }
+    }
+
+    @keyframes glow {
+      0%, 100% { filter: drop-shadow(0 0 3px rgba(var(--primary-color-rgb), 0.7)); }
+      50% { filter: drop-shadow(0 0 8px rgba(var(--primary-color-rgb), 1)); }
+    }
+
+    @keyframes neon-border {
+      0%, 100% { box-shadow: 0 0 5px rgba(var(--primary-color-rgb), 0.5); }
+      50% { box-shadow: 0 0 15px rgba(var(--primary-color-rgb), 0.8), 0 0 25px rgba(var(--primary-color-rgb), 0.4); }
+    }
+
+    .announcement-bar__slider {
+      height: 100%;
+    }
+
+    .announcement-bar__slide {
       display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 50px;
+      transition: opacity 0.5s ease;
+    }
+
+    .announcement-bar__content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 20px;
+      transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+      position: relative;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .announcement-bar__icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .announcement-bar__icon::after {
+      content: '';
+      position: absolute;
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(var(--primary-color-rgb), 0.3) 0%, transparent 70%);
+      z-index: -1;
+      opacity: 0;
+      transform: scale(0.5);
+      transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    .announcement-bar__content:hover .announcement-bar__icon::after {
+      opacity: 1;
+      transform: scale(1.7);
+    }
+
+    .announcement-bar__icon-svg {
+      width: 20px;
+      height: 20px;
+      fill: var(--primary-color);
+      filter: drop-shadow(0 0 5px rgba(var(--primary-color-rgb), 0.5));
+      transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+      animation: glow 3s infinite ease-in-out;
+    }
+
+    .announcement-bar__content:hover .announcement-bar__icon-svg {
+      transform: scale(1.2) rotate(-5deg);
+      animation: pulse 1s infinite alternate;
+    }
+
+    .announcement-bar__text {
+      font-size: 14px;
+      font-weight: 500;
+      color: white;
+      letter-spacing: 0.02em;
+      background-image: linear-gradient(45deg, #fff, rgba(255, 255, 255, 0.7), var(--primary-color), rgba(255, 255, 255, 0.9));
+      background-size: 300% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+      text-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+      animation: textShimmer 4s linear infinite;
+    }
+
+    @keyframes textShimmer {
+      0% { background-position: 0% center; }
+      100% { background-position: 300% center; }
+    }
+
+    .announcement-bar__content:hover .announcement-bar__text {
+      transform: translateX(3px);
+      background-position: right center;
+      filter: brightness(1.2);
+    }
+
+    .announcement-bar__link {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--primary-color);
+      text-decoration: none;
+      position: relative;
+      padding: 4px 12px;
+      border-radius: 30px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(var(--primary-color-rgb), 0.3);
+      transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+      overflow: hidden;
+      animation: neon-border 3s infinite alternate;
+    }
+
+    .announcement-bar__link::before {
+      content: '';
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      animation: slide {{ section.blocks.size | times: 4 }}s linear infinite;
+      background: linear-gradient(90deg, rgba(var(--primary-color-rgb), 0.1) 0%, rgba(255, 215, 0, 0.1) 100%);
+      transform: translateX(-100%);
+      transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+      z-index: -1;
     }
 
-    .announcement-slide {
-      flex: 0 0 100%;
+    .announcement-bar__link:hover {
+      border-color: rgba(var(--primary-color-rgb), 0.8);
+      box-shadow: 0 5px 15px -5px rgba(var(--primary-color-rgb), 0.5);
+      transform: translateY(-2px);
+      text-shadow: 0 0 5px rgba(var(--primary-color-rgb), 0.5);
+    }
+
+    .announcement-bar__link:hover::before {
+      transform: translateX(0);
+    }
+
+    .announcement-bar__arrow {
+      width: 16px;
+      height: 16px;
+      transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    .announcement-bar__link:hover .announcement-bar__arrow {
+      transform: translateX(3px);
+      animation: pulse 1s infinite alternate;
+    }
+
+    .announcement-bar__controls {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      transform: translateY(-50%);
       display: flex;
-      justify-content: center;
+      justify-content: space-between;
       align-items: center;
-      padding: 0.5rem;
+      padding: 0 10px;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .announcement-bar__pagination {
+      position: absolute;
+      bottom: 5px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 5px;
+      z-index: 2;
+    }
+
+    .announcement-bar__button {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: rgba(255, 255, 255, 0.7);
+      transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+      pointer-events: auto;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .announcement-bar__button svg {
+      width: 18px;
+      height: 18px;
+      filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.3));
+    }
+
+    .announcement-bar__button:hover {
+      background: rgba(var(--primary-color-rgb), 0.3);
+      color: white;
+      transform: scale(1.1);
+      box-shadow: 0 0 15px rgba(var(--primary-color-rgb), 0.5);
+    }
+
+    @media (max-width: 768px) {
+      .announcement-bar__content {
+        flex-wrap: wrap;
+        gap: 6px;
+        padding: 0 30px;
+        justify-content: center;
+      }
+      
+      .announcement-bar__controls {
+        padding: 0 5px;
+      }
+    }
+
+    .swiper-pagination-bullet {
+      width: 6px;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.3);
+      opacity: 1;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .swiper-pagination-bullet::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: transparent;
+      border: 1px solid var(--primary-color);
       opacity: 0;
-      transform: translateY(20px);
-      animation: fadeInUp 0.5s ease forwards;
+      transition: all 0.3s ease;
     }
 
-    .announcement-link {
-      color: inherit;
-      text-decoration: none;
-      width: 100%;
-      text-align: center;
+    .swiper-pagination-bullet-active {
+      background: var(--primary-color);
+      transform: scale(1.3);
     }
 
-    .announcement-content {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
+    .swiper-pagination-bullet-active::after {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 1;
+      animation: pulseRing 2s infinite;
     }
 
-    .announcement-icon {
-      font-size: 1.2em;
-    }
-
-    .announcement-text {
-      font-weight: 500;
-      letter-spacing: 0.5px;
-      background: linear-gradient(45deg, #FFD700, #FFA500);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    @keyframes slide {
-      {% for block in section.blocks %}
-        {{ forloop.index0 | times: 100 | divided_by: section.blocks.size }}% {
-          transform: translateX(-{{ forloop.index0 | times: 100 }}%);
-        }
-        {{ forloop.index | times: 100 | divided_by: section.blocks.size | minus: 100 | divided_by: section.blocks.size }}% {
-          transform: translateX(-{{ forloop.index0 | times: 100 }}%);
-        }
-      {% endfor %}
-      100% {
-        transform: translateX(-{{ section.blocks.size | minus: 1 | times: 100 }}%);
-      }
-    }
-
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+    @keyframes pulseRing {
+      0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.8; }
+      50% { transform: translate(-50%, -50%) scale(1.3); opacity: 0.4; }
+      100% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.8; }
     }
   </style>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Initialize the announcement bar slider
+    new Swiper('.announcement-bar__slider', {
+      autoplay: {
+        delay: 5000,
+        disableOnInteraction: false,
+      },
+      speed: 800,
+      loop: true,
+      effect: 'fade',
+      fadeEffect: {
+        crossFade: true
+      },
+      navigation: {
+        nextEl: '.announcement-bar__next',
+        prevEl: '.announcement-bar__prev',
+      },
+      pagination: {
+        el: '.announcement-bar__pagination',
+        clickable: true,
+      },
+      on: {
+        slideChangeTransitionStart: function() {
+          // Add slide-in animation for text
+          const activeSlide = document.querySelector('.swiper-slide-active .announcement-bar__content');
+          if (activeSlide) {
+            activeSlide.style.opacity = '0';
+            activeSlide.style.transform = 'translateY(10px)';
+            
+            setTimeout(() => {
+              activeSlide.style.opacity = '1';
+              activeSlide.style.transform = 'translateY(0)';
+            }, 100);
+          }
+        }
+      }
+    });
+    
+    // Add interactive hover effect to announcement icons
+    const icons = document.querySelectorAll('.announcement-bar__icon-svg');
+    
+    icons.forEach(icon => {
+      icon.addEventListener('mouseover', () => {
+        // Add a subtle pulse effect
+        icon.style.animation = 'pulse 0.7s cubic-bezier(0.23, 1, 0.32, 1) forwards';
+      });
+      
+      icon.addEventListener('mouseout', () => {
+        icon.style.animation = 'glow 3s infinite ease-in-out';
+      });
+    });
+    
+    // Add modern hover effect for links
+    const links = document.querySelectorAll('.announcement-bar__link');
+    
+    links.forEach(link => {
+      link.addEventListener('mouseover', () => {
+        link.style.animation = 'none';
+      });
+      
+      link.addEventListener('mouseout', () => {
+        link.style.animation = 'neon-border 3s infinite alternate';
+      });
+    });
+    
+    // Add reflective glossy effect on scroll
+    window.addEventListener('scroll', () => {
+      const announcementBar = document.querySelector('.announcement-bar');
+      if (announcementBar) {
+        const scrollPosition = window.scrollY;
+        const opacity = Math.max(0, Math.min(1, 1 - scrollPosition / 200));
+        
+        announcementBar.style.setProperty('--gloss-position', `${scrollPosition / 5}%`);
+        announcementBar.style.opacity = opacity.toString();
+        
+        // Add parallax effect to the bar on scroll
+        if (scrollPosition < 100) {
+          announcementBar.style.transform = `translateY(${scrollPosition * 0.1}px)`;
+        }
+      }
+    });
+    
+    // Add 3D tilt effect on mouse move for the entire bar
+    const announcementBar = document.querySelector('.announcement-bar');
+    if (announcementBar) {
+      document.addEventListener('mousemove', (e) => {
+        const x = e.clientX / window.innerWidth;
+        const y = e.clientY / window.innerHeight;
+        
+        // Subtle tilt effect
+        const tiltX = (y - 0.5) * 2;  // -1 to 1
+        const tiltY = (x - 0.5) * -2; // -1 to 1
+        
+        announcementBar.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
+      });
+      
+      // Reset transform when mouse leaves
+      document.addEventListener('mouseleave', () => {
+        announcementBar.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg)';
+      });
+    }
+  });
+  </script>
 {% endif %}
 
 {% schema %}
 {
   "name": "Announcement Bar",
-  "max_blocks": 5,
+  "settings": [],
   "blocks": [
     {
       "type": "announcement",
@@ -118,18 +489,66 @@
           "type": "text",
           "id": "text",
           "label": "Text",
-          "default": "Welcome to our store"
+          "default": "Announce special offers or promotions"
         },
         {
-          "type": "text",
+          "type": "select",
           "id": "icon",
-          "label": "Icon (emoji)",
-          "default": "🔥"
+          "label": "Icon",
+          "options": [
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "truck",
+              "label": "Shipping"
+            },
+            {
+              "value": "star",
+              "label": "Star"
+            },
+            {
+              "value": "gift",
+              "label": "Gift"
+            },
+            {
+              "value": "tag",
+              "label": "Tag"
+            },
+            {
+              "value": "info",
+              "label": "Info"
+            },
+            {
+              "value": "check",
+              "label": "Check"
+            },
+            {
+              "value": "fire",
+              "label": "Fire"
+            },
+            {
+              "value": "sparkles",
+              "label": "Sparkles"
+            },
+            {
+              "value": "clock",
+              "label": "Clock"
+            }
+          ],
+          "default": "none"
         },
         {
           "type": "url",
           "id": "link",
           "label": "Link"
+        },
+        {
+          "type": "text",
+          "id": "link_text",
+          "label": "Link Text",
+          "default": "Learn More"
         }
       ]
     }
@@ -139,25 +558,7 @@
       "name": "Announcement Bar",
       "blocks": [
         {
-          "type": "announcement",
-          "settings": {
-            "text": "Free shipping on orders over $100",
-            "icon": "🚚"
-          }
-        },
-        {
-          "type": "announcement",
-          "settings": {
-            "text": "New collection just dropped!",
-            "icon": "✨"
-          }
-        },
-        {
-          "type": "announcement",
-          "settings": {
-            "text": "Limited time offer - 20% off",
-            "icon": "🔥"
-          }
+          "type": "announcement"
         }
       ]
     }
