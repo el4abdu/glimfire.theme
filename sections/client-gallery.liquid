@@ -1,0 +1,258 @@
+{% if section.blocks.size > 0 %}
+<div class="client-gallery" style="background-color: {{ section.settings.background_color }};">
+  <div class="client-gallery__container">
+    {% if section.settings.title != blank %}
+      <h2 class="client-gallery__title">{{ section.settings.title }}</h2>
+    {% endif %}
+    
+    <div class="client-gallery__slider swiper-container">
+      <div class="swiper-wrapper">
+        {% for block in section.blocks %}
+          <div class="swiper-slide client-gallery__slide" {{ block.shopify_attributes }}>
+            <div class="client-gallery__image-wrap">
+              {% if block.settings.image != blank %}
+                <img 
+                  src="{{ block.settings.image | img_url: '600x' }}"
+                  alt="{{ block.settings.client_name }}"
+                  loading="lazy"
+                  class="client-gallery__image"
+                >
+              {% endif %}
+            </div>
+            {% if block.settings.client_name != blank or block.settings.testimonial != blank %}
+              <div class="client-gallery__content">
+                {% if block.settings.client_name != blank %}
+                  <h3 class="client-gallery__name">{{ block.settings.client_name }}</h3>
+                {% endif %}
+                {% if block.settings.testimonial != blank %}
+                  <p class="client-gallery__testimonial">{{ block.settings.testimonial }}</p>
+                {% endif %}
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+      
+      <div class="client-gallery__navigation">
+        <button class="client-gallery__prev">
+          <svg width="16" height="9" viewBox="0 0 16 9" fill="none">
+            <path d="M16 1.38462L14.5455 0L8 6.23077L1.45455 0L0 1.38462L8 9L16 1.38462Z"/>
+          </svg>
+        </button>
+        <button class="client-gallery__next">
+          <svg width="16" height="9" viewBox="0 0 16 9" fill="none">
+            <path d="M16 1.38462L14.5455 0L8 6.23077L1.45455 0L0 1.38462L8 9L16 1.38462Z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.client-gallery {
+  padding: 6rem 2rem;
+  overflow: hidden;
+}
+
+.client-gallery__container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.client-gallery__title {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 3rem;
+  background: linear-gradient(45deg, var(--primary-color), #FFA500);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.client-gallery__slider {
+  position: relative;
+  padding: 2rem 0;
+}
+
+.client-gallery__slide {
+  width: 340px;
+  transform-origin: center center;
+  transition: all 0.6s ease;
+}
+
+.client-gallery__image-wrap {
+  position: relative;
+  border-radius: 15px;
+  overflow: hidden;
+  aspect-ratio: 1;
+}
+
+.client-gallery__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.client-gallery__slide:hover .client-gallery__image {
+  transform: scale(1.05);
+}
+
+.client-gallery__content {
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.client-gallery__name {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-color);
+}
+
+.client-gallery__testimonial {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.6;
+}
+
+.client-gallery__navigation {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.client-gallery__prev,
+.client-gallery__next {
+  background: transparent;
+  border: 2px solid var(--primary-color);
+  color: var(--primary-color);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.client-gallery__prev:hover,
+.client-gallery__next:hover {
+  background: var(--primary-color);
+  color: var(--background-color);
+}
+
+.client-gallery__prev svg,
+.client-gallery__next svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+.client-gallery__prev svg {
+  transform: rotate(90deg);
+}
+
+.client-gallery__next svg {
+  transform: rotate(-90deg);
+}
+
+@media (max-width: 768px) {
+  .client-gallery {
+    padding: 4rem 1rem;
+  }
+  
+  .client-gallery__title {
+    font-size: 2rem;
+  }
+  
+  .client-gallery__slide {
+    width: 280px;
+  }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  new Swiper('.client-gallery__slider', {
+    effect: 'coverflow',
+    grabCursor: true,
+    centeredSlides: true,
+    slidesPerView: 'auto',
+    loop: true,
+    coverflowEffect: {
+      rotate: 0,
+      stretch: 0,
+      depth: 200,
+      modifier: 1,
+      slideShadows: false,
+    },
+    navigation: {
+      nextEl: '.client-gallery__next',
+      prevEl: '.client-gallery__prev',
+    },
+  });
+});
+</script>
+
+{% schema %}
+{
+  "name": "Client Gallery",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Our Happy Clients"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#121212"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "client",
+      "name": "Client",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Client Image"
+        },
+        {
+          "type": "text",
+          "id": "client_name",
+          "label": "Client Name",
+          "default": "Happy Client"
+        },
+        {
+          "type": "textarea",
+          "id": "testimonial",
+          "label": "Testimonial",
+          "default": "Amazing product! Fast shipping and great quality."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Client Gallery",
+      "blocks": [
+        {
+          "type": "client"
+        },
+        {
+          "type": "client"
+        },
+        {
+          "type": "client"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %} 
