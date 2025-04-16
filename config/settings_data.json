@@ -1,0 +1,33 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "current": {
+    "sections": {
+      "announcement-bar": {
+        "type": "announcement-bar",
+        "blocks": {
+          "announcement_ayqH7D": {
+            "type": "announcement",
+            "settings": {
+              "text": "Welcome to our store",
+              "icon": "🔥",
+              "link": ""
+            }
+          }
+        },
+        "block_order": [
+          "announcement_ayqH7D"
+        ],
+        "settings": {}
+      }
+    },
+    "content_for_index": []
+  }
+}
