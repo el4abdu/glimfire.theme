@@ -2,95 +2,52 @@
 <html lang="{{ request.locale.iso_code }}">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ page_title | escape }}</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="">
+    <link rel="canonical" href="{{ canonical_url }}">
     
+    {%- if settings.favicon != blank -%}
+      <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
+    {%- endif -%}
+
+    <title>
+      {{ page_title }}
+      {%- if current_tags %} &ndash; tagged "{{ current_tags | join: ', ' }}"{% endif -%}
+      {%- if current_page != 1 %} &ndash; Page {{ current_page }}{% endif -%}
+      {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
+    </title>
+
+    {% if page_description %}
+      <meta name="description" content="{{ page_description | escape }}">
+    {% endif %}
+
     {{ content_for_header }}
+
+    {{ 'base.css' | asset_url | stylesheet_tag }}
+    {{ 'theme.css' | asset_url | stylesheet_tag }}
     
-    <!-- Modern styling -->
+    <script src="{{ 'theme.js' | asset_url }}" defer="defer"></script>
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
+
     <style>
       :root {
-        --primary-color: #2D1B30;
-        --accent-color: #FFD700;
-        --text-color: #FFFFFF;
-        --background-color: #1A1A1A;
-      }
-      
-      body {
-        margin: 0;
-        padding: 0;
-        font-family: 'Inter', sans-serif;
-        background-color: var(--background-color);
-        color: var(--text-color);
-      }
-      
-      .header {
-        padding: 1rem 2rem;
-        background-color: var(--primary-color);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-      
-      .logo {
-        font-size: 2rem;
-        font-weight: bold;
-        color: var(--accent-color);
-      }
-      
-      .nav-links {
-        display: flex;
-        gap: 2rem;
-      }
-      
-      .nav-links a {
-        color: var(--text-color);
-        text-decoration: none;
-        transition: color 0.3s ease;
-      }
-      
-      .nav-links a:hover {
-        color: var(--accent-color);
-      }
-      
-      .main-content {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 2rem;
-      }
-      
-      .footer {
-        background-color: var(--primary-color);
-        padding: 2rem;
-        margin-top: 4rem;
+        --primary-color: {{ settings.primary_color }};
+        --text-color: {{ settings.text_color }};
+        --background-color: {{ settings.background_color }};
       }
     </style>
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   </head>
-  
-  <body>
-    <header class="header">
-      <div class="logo">GLIMFIRE</div>
-      <nav class="nav-links">
-        <a href="/">Home</a>
-        <a href="/collections/all">Collection</a>
-        <a href="/pages/about">About</a>
-        <a href="/cart">Cart</a>
-      </nav>
-    </header>
 
-    <main class="main-content">
+  <body>
+    {% section 'announcement-bar' %}
+    {% section 'header' %}
+
+    <main role="main">
       {{ content_for_layout }}
     </main>
 
-    <footer class="footer">
-      <div class="footer-content">
-        © 2024 Glimfire. All rights reserved.
-      </div>
-    </footer>
-    
-    {{ content_for_footer }}
+    {% section 'footer' %}
   </body>
 </html> 
