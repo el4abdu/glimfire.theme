@@ -1,0 +1,302 @@
+{% paginate collection.products by 12 %}
+
+<div class="collection-header">
+  <h1>{{ collection.title }}</h1>
+  {% if collection.description != blank %}
+    <div class="collection-description">{{ collection.description }}</div>
+  {% endif %}
+</div>
+
+<div class="collection-container">
+  <div class="filters-sidebar">
+    <div class="filter-group">
+      <h3>Sort By</h3>
+      <select id="sort-by" onchange="window.location.href = this.value">
+        <option value="{{ collection.url }}?sort_by=manual" {% if collection.sort_by == 'manual' %}selected{% endif %}>Featured</option>
+        <option value="{{ collection.url }}?sort_by=price-ascending" {% if collection.sort_by == 'price-ascending' %}selected{% endif %}>Price: Low to High</option>
+        <option value="{{ collection.url }}?sort_by=price-descending" {% if collection.sort_by == 'price-descending' %}selected{% endif %}>Price: High to Low</option>
+        <option value="{{ collection.url }}?sort_by=title-ascending" {% if collection.sort_by == 'title-ascending' %}selected{% endif %}>Alphabetically: A-Z</option>
+        <option value="{{ collection.url }}?sort_by=title-descending" {% if collection.sort_by == 'title-descending' %}selected{% endif %}>Alphabetically: Z-A</option>
+      </select>
+    </div>
+
+    {% for filter in collection.filters %}
+      <div class="filter-group">
+        <h3>{{ filter.label }}</h3>
+        <ul>
+          {% for value in filter.values %}
+            <li>
+              <label>
+                <input type="checkbox" 
+                       name="{{ filter.param_name }}" 
+                       value="{{ value.param }}"
+                       {% if value.active %}checked{% endif %}
+                       onchange="updateFilters(this)">
+                {{ value.label }} ({{ value.count }})
+              </label>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endfor %}
+  </div>
+
+  <div class="products-grid">
+    {% for product in collection.products %}
+      <div class="product-card">
+        <a href="{{ product.url }}" class="product-link">
+          <div class="product-image">
+            <img src="{{ product.featured_image | img_url: '500x' }}" alt="{{ product.title }}">
+          </div>
+          <div class="product-info">
+            <h2>{{ product.title }}</h2>
+            <p class="price">{{ product.price | money }}</p>
+            {% if product.available %}
+              <button class="quick-add" onclick="quickAdd('{{ product.variants.first.id }}', event)">Quick Add</button>
+            {% else %}
+              <button class="sold-out" disabled>Sold Out</button>
+            {% endif %}
+          </div>
+        </a>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+{% if paginate.pages > 1 %}
+  <div class="pagination">
+    {{ paginate | default_pagination }}
+  </div>
+{% endif %}
+
+{% endpaginate %}
+
+<style>
+  .collection-header {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: linear-gradient(rgba(45, 27, 48, 0.8), rgba(26, 26, 26, 0.9));
+  }
+
+  .collection-header h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    background: linear-gradient(45deg, #FFD700, #FFA500);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .collection-description {
+    max-width: 600px;
+    margin: 0 auto;
+    color: var(--text-color);
+  }
+
+  .collection-container {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    gap: 2rem;
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .filters-sidebar {
+    position: sticky;
+    top: 2rem;
+    height: fit-content;
+  }
+
+  .filter-group {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: rgba(45, 27, 48, 0.3);
+    border-radius: 15px;
+  }
+
+  .filter-group h3 {
+    color: var(--accent-color);
+    margin-bottom: 1rem;
+  }
+
+  .filter-group select {
+    width: 100%;
+    padding: 0.8rem;
+    background: rgba(45, 27, 48, 0.3);
+    border: 1px solid var(--accent-color);
+    border-radius: 8px;
+    color: var(--text-color);
+  }
+
+  .filter-group ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .filter-group li {
+    margin-bottom: 0.5rem;
+  }
+
+  .filter-group label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-color);
+    cursor: pointer;
+  }
+
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 2rem;
+  }
+
+  .product-card {
+    background: rgba(45, 27, 48, 0.3);
+    border-radius: 15px;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+  }
+
+  .product-card:hover {
+    transform: translateY(-10px);
+  }
+
+  .product-link {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .product-image {
+    aspect-ratio: 1;
+    overflow: hidden;
+  }
+
+  .product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  .product-card:hover .product-image img {
+    transform: scale(1.1);
+  }
+
+  .product-info {
+    padding: 1.5rem;
+  }
+
+  .product-info h2 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.1rem;
+    color: var(--accent-color);
+  }
+
+  .price {
+    font-size: 1.2rem;
+    color: white;
+    margin-bottom: 1rem;
+  }
+
+  .quick-add,
+  .sold-out {
+    width: 100%;
+    padding: 0.8rem;
+    border: none;
+    border-radius: 25px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .quick-add {
+    background: var(--accent-color);
+    color: var(--primary-color);
+  }
+
+  .quick-add:hover {
+    background: #FFA500;
+  }
+
+  .sold-out {
+    background: #666;
+    color: white;
+    cursor: not-allowed;
+  }
+
+  .pagination {
+    text-align: center;
+    margin: 4rem 0;
+  }
+
+  .pagination span,
+  .pagination a {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    margin: 0 0.25rem;
+    border-radius: 8px;
+    color: var(--text-color);
+    text-decoration: none;
+  }
+
+  .pagination span.current {
+    background: var(--accent-color);
+    color: var(--primary-color);
+  }
+
+  @media (max-width: 968px) {
+    .collection-container {
+      grid-template-columns: 1fr;
+    }
+
+    .filters-sidebar {
+      position: static;
+      margin-bottom: 2rem;
+    }
+  }
+</style>
+
+<script>
+  function quickAdd(variantId, event) {
+    event.preventDefault();
+    
+    fetch('/cart/add.js', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        items: [{
+          id: variantId,
+          quantity: 1
+        }]
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      // Update cart count or show notification
+      alert('Product added to cart!');
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('Error adding product to cart');
+    });
+  }
+
+  function updateFilters(checkbox) {
+    const url = new URL(window.location.href);
+    const params = new URLSearchParams(url.search);
+    
+    if (checkbox.checked) {
+      params.append(checkbox.name, checkbox.value);
+    } else {
+      const values = params.getAll(checkbox.name).filter(value => value !== checkbox.value);
+      params.delete(checkbox.name);
+      values.forEach(value => params.append(checkbox.name, value));
+    }
+    
+    url.search = params.toString();
+    window.location.href = url.toString();
+  }
+</script> 

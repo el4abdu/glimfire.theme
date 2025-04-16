@@ -1,0 +1,166 @@
+{% if section.blocks.size > 0 %}
+  <div class="announcement-bar">
+    <div class="announcement-slider">
+      {% for block in section.blocks %}
+        <div class="announcement-slide" {{ block.shopify_attributes }}>
+          {% if block.settings.link != blank %}
+            <a href="{{ block.settings.link }}" class="announcement-link">
+          {% endif %}
+          
+          <div class="announcement-content">
+            {% if block.settings.icon != blank %}
+              <span class="announcement-icon">{{ block.settings.icon }}</span>
+            {% endif %}
+            <span class="announcement-text">{{ block.settings.text }}</span>
+          </div>
+          
+          {% if block.settings.link != blank %}
+            </a>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <style>
+    .announcement-bar {
+      background: linear-gradient(45deg, var(--primary-color), #000);
+      color: var(--text-color);
+      position: relative;
+      overflow: hidden;
+      height: 40px;
+    }
+
+    .announcement-slider {
+      display: flex;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      animation: slide {{ section.blocks.size | times: 4 }}s linear infinite;
+    }
+
+    .announcement-slide {
+      flex: 0 0 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 0.5rem;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 0.5s ease forwards;
+    }
+
+    .announcement-link {
+      color: inherit;
+      text-decoration: none;
+      width: 100%;
+      text-align: center;
+    }
+
+    .announcement-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .announcement-icon {
+      font-size: 1.2em;
+    }
+
+    .announcement-text {
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      background: linear-gradient(45deg, #FFD700, #FFA500);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    @keyframes slide {
+      {% for block in section.blocks %}
+        {{ forloop.index0 | times: 100 | divided_by: section.blocks.size }}% {
+          transform: translateX(-{{ forloop.index0 | times: 100 }}%);
+        }
+        {{ forloop.index | times: 100 | divided_by: section.blocks.size | minus: 100 | divided_by: section.blocks.size }}% {
+          transform: translateX(-{{ forloop.index0 | times: 100 }}%);
+        }
+      {% endfor %}
+      100% {
+        transform: translateX(-{{ section.blocks.size | minus: 1 | times: 100 }}%);
+      }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Announcement Bar",
+  "max_blocks": 5,
+  "blocks": [
+    {
+      "type": "announcement",
+      "name": "Announcement",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "Welcome to our store"
+        },
+        {
+          "type": "text",
+          "id": "icon",
+          "label": "Icon (emoji)",
+          "default": "🔥"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Announcement Bar",
+      "blocks": [
+        {
+          "type": "announcement",
+          "settings": {
+            "text": "Free shipping on orders over $100",
+            "icon": "🚚"
+          }
+        },
+        {
+          "type": "announcement",
+          "settings": {
+            "text": "New collection just dropped!",
+            "icon": "✨"
+          }
+        },
+        {
+          "type": "announcement",
+          "settings": {
+            "text": "Limited time offer - 20% off",
+            "icon": "🔥"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %} 

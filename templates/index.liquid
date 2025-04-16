@@ -1,0 +1,512 @@
+<!-- Hero Section -->
+<div class="hero">
+  <div class="hero-content">
+    <h1>LUXURY IN EVERY SPARK</h1>
+    <p>Discover our exceptional collection of premium lighters crafted for the modern spirit</p>
+    <div class="hero-buttons">
+      <a href="/collections/all" class="cta-button primary">Shop Now</a>
+      <a href="/pages/about" class="cta-button secondary">Learn More</a>
+    </div>
+  </div>
+  <div class="hero-background">
+    <video autoplay loop muted playsinline class="hero-video">
+      <source src="{{ 'hero-flame.mp4' | asset_url }}" type="video/mp4">
+    </video>
+  </div>
+</div>
+
+<!-- Collection Categories -->
+<div class="categories">
+  <h2>The Art of Fire 🔥</h2>
+  <div class="categories-grid">
+    {% for collection in collections limit: 3 %}
+      <a href="{{ collection.url }}" class="category-card">
+        <div class="category-image">
+          <img src="{{ collection.image | img_url: '600x' }}" alt="{{ collection.title }}">
+        </div>
+        <div class="category-info">
+          <h3>{{ collection.title }}</h3>
+          <span class="category-link">Explore Collection →</span>
+        </div>
+      </a>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Featured Products -->
+<div class="featured-products">
+  <h2>Featured Collection</h2>
+  <div class="product-grid">
+    {% for product in collections.featured.products limit: 8 %}
+      <div class="product-card">
+        <div class="product-image">
+          <img src="{{ product.featured_image | img_url: '500x' }}" alt="{{ product.title }}" loading="lazy">
+          {% if product.available %}
+            <div class="quick-add-overlay">
+              <button onclick="quickAdd('{{ product.variants.first.id }}')" class="quick-add-btn">Quick Add</button>
+            </div>
+          {% else %}
+            <div class="sold-out-overlay">
+              <span>Sold Out</span>
+            </div>
+          {% endif %}
+        </div>
+        <a href="{{ product.url }}" class="product-info">
+          <h3>{{ product.title }}</h3>
+          <div class="price-rating">
+            <p class="price">{{ product.price | money }}</p>
+            <div class="rating">
+              <span class="stars">★★★★★</span>
+              <span class="count">({{ product.metafields.reviews.rating_count | default: 5 }})</span>
+            </div>
+          </div>
+        </a>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Customer Reviews -->
+<div class="reviews-section">
+  <h2>What Our Customers Say</h2>
+  <div class="reviews-grid">
+    {% for i in (1..6) %}
+      <div class="review-card">
+        <div class="review-header">
+          <img src="{{ 'user-avatar.png' | asset_url }}" alt="Customer" class="review-avatar">
+          <div class="review-meta">
+            <h4>Happy Customer</h4>
+            <div class="stars">★★★★★</div>
+          </div>
+        </div>
+        <p class="review-text">"Love this sick coolest lighter! Fast shipping, all came well packaged and working!"</p>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Instagram Feed -->
+<div class="instagram-section">
+  <h2>Follow Us on Instagram</h2>
+  <div class="instagram-grid">
+    {% for i in (1..6) %}
+      <div class="instagram-item">
+        <img src="{{ 'instagram-' | append: i | append: '.jpg' | asset_url }}" alt="Instagram post">
+        <div class="instagram-overlay">
+          <span class="instagram-icon">📸</span>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  <a href="https://instagram.com" class="instagram-link" target="_blank">@glimfire</a>
+</div>
+
+<style>
+  .hero {
+    height: 100vh;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    overflow: hidden;
+  }
+
+  .hero-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+  }
+
+  .hero-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.6);
+  }
+
+  .hero-content {
+    text-align: center;
+    max-width: 800px;
+    padding: 2rem;
+    z-index: 1;
+  }
+
+  .hero h1 {
+    font-size: 4.5rem;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(45deg, #FFD700, #FFA500);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 800;
+  }
+
+  .hero p {
+    font-size: 1.5rem;
+    margin-bottom: 2.5rem;
+    line-height: 1.6;
+  }
+
+  .hero-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+  }
+
+  .cta-button {
+    padding: 1rem 2.5rem;
+    border-radius: 30px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+  }
+
+  .cta-button.primary {
+    background: linear-gradient(45deg, #FFD700, #FFA500);
+    color: var(--primary-color);
+    text-decoration: none;
+  }
+
+  .cta-button.secondary {
+    background: transparent;
+    border: 2px solid #FFD700;
+    color: #FFD700;
+    text-decoration: none;
+  }
+
+  .cta-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+  }
+
+  .categories {
+    padding: 6rem 2rem;
+  }
+
+  .categories h2 {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 3rem;
+    background: linear-gradient(45deg, #FFD700, #FFA500);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .category-card {
+    position: relative;
+    border-radius: 15px;
+    overflow: hidden;
+    aspect-ratio: 1;
+    text-decoration: none;
+  }
+
+  .category-image {
+    width: 100%;
+    height: 100%;
+  }
+
+  .category-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+  }
+
+  .category-card:hover .category-image img {
+    transform: scale(1.1);
+  }
+
+  .category-info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 2rem;
+    background: linear-gradient(transparent, rgba(0,0,0,0.8));
+    color: white;
+  }
+
+  .category-info h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .category-link {
+    color: #FFD700;
+    font-weight: 500;
+  }
+
+  .featured-products {
+    padding: 6rem 2rem;
+    background: rgba(45, 27, 48, 0.3);
+  }
+
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .product-card {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 15px;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+  }
+
+  .product-card:hover {
+    transform: translateY(-10px);
+  }
+
+  .product-image {
+    position: relative;
+    aspect-ratio: 1;
+  }
+
+  .product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .quick-add-overlay,
+  .sold-out-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .product-card:hover .quick-add-overlay,
+  .product-card:hover .sold-out-overlay {
+    opacity: 1;
+  }
+
+  .quick-add-btn {
+    padding: 0.8rem 1.5rem;
+    background: #FFD700;
+    border: none;
+    border-radius: 25px;
+    color: var(--primary-color);
+    font-weight: bold;
+    cursor: pointer;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+  }
+
+  .product-card:hover .quick-add-btn {
+    transform: translateY(0);
+  }
+
+  .product-info {
+    padding: 1.5rem;
+    text-decoration: none;
+    color: white;
+  }
+
+  .price-rating {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.5rem;
+  }
+
+  .rating {
+    color: #FFD700;
+    font-size: 0.9rem;
+  }
+
+  .reviews-section {
+    padding: 6rem 2rem;
+  }
+
+  .reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .review-card {
+    background: rgba(45, 27, 48, 0.3);
+    padding: 2rem;
+    border-radius: 15px;
+  }
+
+  .review-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .review-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .instagram-section {
+    padding: 6rem 2rem;
+    text-align: center;
+  }
+
+  .instagram-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    max-width: 1400px;
+    margin: 2rem auto;
+  }
+
+  .instagram-item {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .instagram-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .instagram-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .instagram-item:hover .instagram-overlay {
+    opacity: 1;
+  }
+
+  .instagram-link {
+    display: inline-block;
+    margin-top: 2rem;
+    color: #FFD700;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.2rem;
+  }
+
+  @media (max-width: 768px) {
+    .hero h1 {
+      font-size: 2.5rem;
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+    }
+
+    .hero-buttons {
+      flex-direction: column;
+    }
+
+    .categories-grid,
+    .reviews-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  function quickAdd(variantId) {
+    fetch('/cart/add.js', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        items: [{
+          id: variantId,
+          quantity: 1
+        }]
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      // Show success notification
+      const notification = document.createElement('div');
+      notification.className = 'notification';
+      notification.textContent = 'Added to cart!';
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.remove();
+      }, 3000);
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+  }
+</script>
+
+<style>
+  .notification {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #4CAF50;
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 30px;
+    animation: slideIn 0.3s ease, slideOut 0.3s ease 2.7s;
+  }
+
+  @keyframes slideIn {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideOut {
+    from {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    to {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+  }
+</style> 

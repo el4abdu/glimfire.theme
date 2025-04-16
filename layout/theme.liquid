@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="{{ request.locale.iso_code }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page_title | escape }}</title>
+    
+    {{ content_for_header }}
+    
+    <!-- Modern styling -->
+    <style>
+      :root {
+        --primary-color: #2D1B30;
+        --accent-color: #FFD700;
+        --text-color: #FFFFFF;
+        --background-color: #1A1A1A;
+      }
+      
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Inter', sans-serif;
+        background-color: var(--background-color);
+        color: var(--text-color);
+      }
+      
+      .header {
+        padding: 1rem 2rem;
+        background-color: var(--primary-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      
+      .logo {
+        font-size: 2rem;
+        font-weight: bold;
+        color: var(--accent-color);
+      }
+      
+      .nav-links {
+        display: flex;
+        gap: 2rem;
+      }
+      
+      .nav-links a {
+        color: var(--text-color);
+        text-decoration: none;
+        transition: color 0.3s ease;
+      }
+      
+      .nav-links a:hover {
+        color: var(--accent-color);
+      }
+      
+      .main-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      
+      .footer {
+        background-color: var(--primary-color);
+        padding: 2rem;
+        margin-top: 4rem;
+      }
+    </style>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  </head>
+  
+  <body>
+    <header class="header">
+      <div class="logo">GLIMFIRE</div>
+      <nav class="nav-links">
+        <a href="/">Home</a>
+        <a href="/collections/all">Collection</a>
+        <a href="/pages/about">About</a>
+        <a href="/cart">Cart</a>
+      </nav>
+    </header>
+
+    <main class="main-content">
+      {{ content_for_layout }}
+    </main>
+
+    <footer class="footer">
+      <div class="footer-content">
+        © 2024 Glimfire. All rights reserved.
+      </div>
+    </footer>
+    
+    {{ content_for_footer }}
+  </body>
+</html> 
