@@ -1,0 +1,32 @@
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Node modules
+node_modules/
+
+# Environment files
+.env
+.env.*
+
+# Shopify theme files
+config/settings_data.json
+*.log
+.shopifyignore
+
+# Editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Build files
+dist/
+build/
+tmp/
+temp/ 

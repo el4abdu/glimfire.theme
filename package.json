@@ -1,0 +1,19 @@
+{
+  "name": "glimfire-theme",
+  "version": "1.0.0",
+  "description": "Modern Shopify theme for luxury lighter store",
+  "main": "index.js",
+  "scripts": {
+    "dev": "theme watch",
+    "deploy": "theme deploy",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "swiper": "^10.0.0"
+  },
+  "devDependencies": {
+    "@shopify/themekit": "^1.1.9"
+  },
+  "author": "el4abdu",
+  "license": "MIT"
+} 
