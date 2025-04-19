@@ -1,0 +1,278 @@
+<div class="product-card card" data-product-id="{{ product.id }}">
+  <div class="product-card__image-wrapper">
+    {% if product.featured_image %}
+      <a href="{{ product.url }}" class="product-card__image-link">
+        <img 
+          src="{{ product.featured_image | img_url: '450x450', crop: 'center' }}" 
+          alt="{{ product.title | escape }}" 
+          class="product-card__image"
+          loading="lazy"
+        >
+      </a>
+    {% endif %}
+    
+    {% if product.compare_at_price > product.price %}
+      <span class="product-card__badge">Sale</span>
+    {% endif %}
+    
+    <div class="product-card__overlay">
+      <button class="product-card__quick-add btn btn--accent" data-product-id="{{ product.id }}">
+        <span class="icon">+</span>
+        <span>Quick Add</span>
+      </button>
+    </div>
+  </div>
+  
+  <div class="product-card__content">
+    <h3 class="product-card__title">
+      <a href="{{ product.url }}">{{ product.title }}</a>
+    </h3>
+    
+    <div class="product-card__price">
+      {% if product.compare_at_price > product.price %}
+        <span class="product-card__price--sale">{{ product.price | money }}</span>
+        <span class="product-card__price--compare">{{ product.compare_at_price | money }}</span>
+      {% else %}
+        <span class="product-card__price--regular">{{ product.price | money }}</span>
+      {% endif %}
+    </div>
+    
+    {% if product.variants.size > 1 %}
+      <div class="product-card__variant-info">{{ product.variants.size }} options</div>
+    {% endif %}
+    
+    <div class="product-card__rating">
+      {% if product.metafields.reviews.rating %}
+        <div class="product-card__stars" style="--rating: {{ product.metafields.reviews.rating.value | divided_by: 5.0 | times: 100 }}%;">
+          <span>★★★★★</span>
+        </div>
+        <span class="product-card__rating-count">({{ product.metafields.reviews.rating_count }})</span>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<style>
+  .product-card {
+    position: relative;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: rgba(var(--emerald-green-rgb), 0.05);
+    transition: all 0.4s ease;
+  }
+  
+  .product-card__image-wrapper {
+    position: relative;
+    padding-bottom: 100%;
+    overflow: hidden;
+    background: var(--background-dark);
+  }
+  
+  .product-card__image-link {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+  
+  .product-card__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  
+  .product-card:hover .product-card__image {
+    transform: scale(1.05);
+  }
+  
+  .product-card__badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: var(--accent-color);
+    color: var(--noir-de-vigne);
+    padding: 4px 12px;
+    border-radius: var(--radius-full);
+    font-size: 0.8rem;
+    font-weight: 600;
+    font-family: var(--alt-font);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    z-index: 1;
+  }
+  
+  .product-card__overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(var(--noir-de-vigne-rgb), 0.8), transparent);
+    height: 120px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 15px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+  }
+  
+  .product-card:hover .product-card__overlay {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .product-card__quick-add {
+    padding: 8px 16px;
+    font-size: 0.8rem;
+  }
+  
+  .product-card__quick-add .icon {
+    font-size: 1.1rem;
+    margin-right: 4px;
+  }
+  
+  .product-card__content {
+    padding: 1.25rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .product-card__title {
+    font-family: var(--heading-font);
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+  }
+  
+  .product-card__title a {
+    color: var(--text-color);
+    transition: color 0.2s ease;
+  }
+  
+  .product-card__title a:hover {
+    color: var(--accent-color);
+  }
+  
+  .product-card__price {
+    margin-bottom: 0.75rem;
+    font-family: var(--alt-font);
+    font-weight: 500;
+  }
+  
+  .product-card__price--sale {
+    color: var(--warm-color);
+    margin-right: 8px;
+  }
+  
+  .product-card__price--compare {
+    color: var(--text-muted);
+    text-decoration: line-through;
+    font-size: 0.9em;
+  }
+  
+  .product-card__price--regular {
+    color: var(--accent-color);
+  }
+  
+  .product-card__variant-info {
+    font-size: 0.85rem;
+    color: var(--secondary-color);
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    font-family: var(--alt-font);
+  }
+  
+  .product-card__rating {
+    display: flex;
+    align-items: center;
+    margin-top: auto;
+    padding-top: 0.5rem;
+  }
+  
+  .product-card__stars {
+    position: relative;
+    display: inline-block;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    overflow: hidden;
+  }
+  
+  .product-card__stars:before {
+    content: "★★★★★";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: var(--rating);
+    color: var(--accent-color);
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  
+  .product-card__rating-count {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-left: 4px;
+  }
+  
+  @media (max-width: 768px) {
+    .product-card__title {
+      font-size: 1rem;
+    }
+    
+    .product-card__content {
+      padding: 1rem;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const quickAddButtons = document.querySelectorAll('.product-card__quick-add');
+    
+    quickAddButtons.forEach(button => {
+      button.addEventListener('click', function(e) {
+        e.preventDefault();
+        const productId = this.getAttribute('data-product-id');
+        
+        // Example quick add logic - customize based on your cart implementation
+        fetch('/cart/add.js', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            id: productId,
+            quantity: 1
+          })
+        })
+        .then(response => response.json())
+        .then(data => {
+          // Update cart
+          this.innerHTML = '<span>Added ✓</span>';
+          setTimeout(() => {
+            this.innerHTML = '<span class="icon">+</span><span>Quick Add</span>';
+          }, 2000);
+          
+          // Dispatch custom event to trigger cart drawer
+          document.dispatchEvent(new CustomEvent('product:added', { 
+            detail: { product: data }
+          }));
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          this.innerHTML = '<span>Error</span>';
+          setTimeout(() => {
+            this.innerHTML = '<span class="icon">+</span><span>Quick Add</span>';
+          }, 2000);
+        });
+      });
+    });
+  });
+</script> 
